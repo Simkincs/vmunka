@@ -109,16 +109,16 @@ public class Users implements Serializable {
         try{
             Users us = em.find(Users.class, id);
             
-            this.id = getId();
-            this.email = getEmail();
-            this.firstName = getFirstName();
-            this.lastName = getLastName();
-            this.password = getPassword();
-            this.coursesId = getCoursesId();
-            this.isAdmin = getIsAdmin();
-            this.isDeleted = getIsDeleted();
-            this.createdAt = getCreatedAt();
-            this.deletedAt = getDeletedAt();
+            this.id = us.getId();
+            this.email = us.getEmail();
+            this.firstName = us.getFirstName();
+            this.lastName = us.getLastName();
+            this.password = us.getPassword();
+            this.coursesId = us.getCoursesId();
+            this.isAdmin = us.getIsAdmin();
+            this.isDeleted = us.getIsDeleted();
+            this.createdAt = us.getCreatedAt();
+            this.deletedAt = us.getDeletedAt();
             
         }
         catch(Exception e){
@@ -273,7 +273,7 @@ public class Users implements Serializable {
                     o[2].toString(),
                     o[3].toString(),
                     o[4].toString(),
-                    o[5].toString(),
+                    Integer.parseInt(o[5].toString()),
                     Boolean.parseBoolean(o[6].toString()),
                     Boolean.parseBoolean(o[7].toString()),
                     formatter.parse(o[8].toString()),
