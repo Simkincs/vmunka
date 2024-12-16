@@ -5,24 +5,15 @@
 package com.vizsga.vizsgaprojekt.modell;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.ParameterMode;
-import javax.persistence.Persistence;
-import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,12 +27,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "users")
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
     @NamedQuery(name = "Users.findById", query = "SELECT u FROM Users u WHERE u.id = :id"),
     @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email"),
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
+    @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
     @NamedQuery(name = "Users.findByCoursesId", query = "SELECT u FROM Users u WHERE u.coursesId = :coursesId"),
     @NamedQuery(name = "Users.findByIsAdmin", query = "SELECT u FROM Users u WHERE u.isAdmin = :isAdmin"),
     @NamedQuery(name = "Users.findByIsDeleted", query = "SELECT u FROM Users u WHERE u.isDeleted = :isDeleted"),
@@ -73,8 +66,7 @@ public class Users implements Serializable {
     private String lastName;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
+    @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
     @Basic(optional = false)
@@ -98,38 +90,14 @@ public class Users implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
-    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.vizsga_VizsgaProjekt_war_1.0-SNAPSHOTPU");
-    
     public Users() {
     }
-    
-    public Users(Integer id){
-        EntityManager em = emf.createEntityManager();
-        
-        try{
-            Users us = em.find(Users.class, id);
-            
-            this.id = us.getId();
-            this.email = us.getEmail();
-            this.firstName = us.getFirstName();
-            this.lastName = us.getLastName();
-            this.password = us.getPassword();
-            this.coursesId = us.getCoursesId();
-            this.isAdmin = us.getIsAdmin();
-            this.isDeleted = us.getIsDeleted();
-            this.createdAt = us.getCreatedAt();
-            this.deletedAt = us.getDeletedAt();
-            
-        }
-        catch(Exception e){
-            System.err.println("Hiba: " + e.getLocalizedMessage());
-        }finally{
-            em.clear();
-            em.close();
-        }
+
+    public Users(Integer id) {
+        this.id = id;
     }
 
-    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
+    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -139,7 +107,6 @@ public class Users implements Serializable {
         this.isAdmin = isAdmin;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
-        this.deletedAt = deletedAt;
     }
 
     public Integer getId() {
@@ -245,52 +212,6 @@ public class Users implements Serializable {
     @Override
     public String toString() {
         return "com.vizsga.vizsgaprojekt.modell.Users[ id=" + id + " ]";
-    }
-    
-    public Users login(String email, String password){
-        EntityManager em = emf.createEntityManager();
-        
-        
-        try {
-            StoredProcedureQuery sqp = em.createStoredProcedureQuery("login");
-            
-            sqp.registerStoredProcedureParameter("emailIN", String.class , ParameterMode.IN);
-            sqp.registerStoredProcedureParameter("passwordIN", String.class , ParameterMode.IN);
-            
-            sqp.setParameter("emailIN", email);
-            sqp.setParameter("passwordIN", password);
-            
-            sqp.execute();
-            
-            List<Object[]> resultList = sqp.getResultList();
-            Users toReturn = new Users();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for(Object[] o : resultList){
-                
-                Users u = new Users(
-                    Integer.valueOf(o[0].toString()),
-                    o[1].toString(),
-                    o[2].toString(),
-                    o[3].toString(),
-                    o[4].toString(),
-                    Integer.parseInt(o[5].toString()),
-                    Boolean.parseBoolean(o[6].toString()),
-                    Boolean.parseBoolean(o[7].toString()),
-                    formatter.parse(o[8].toString()),
-                    o[9] == null ? null : formatter.parse(o[9].toString())
-                );
-                toReturn = u;
-            }
-            return toReturn;
-            
-            
-        } catch (Exception e) {
-            System.err.println("Hiba: "+ e.getLocalizedMessage());
-            return null;
-        }finally{
-            em.clear();
-            em.close();
-        }
     }
     
 }

@@ -5,6 +5,7 @@
 package com.vizsga.vizsgaprojekt.config;
 
 
+import com.vizsga.vizsgaprojekt.exceptionLogger.ExceptionLogger;
 import com.vizsga.vizsgaprojekt.modell.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,7 +30,7 @@ import java.util.Date;
 public class JWT {
      private static final String SIGN = "09ce78e64c7d6667e04798aa897e2bbc194d0ce5d19aef677b4477ba0932d972";
     private static final byte[] SECRET =Base64.getDecoder().decode(SIGN);
-    private static ExceptionLogger exceptionLogger = new ExceptionLogger(JWT.class);
+    private static final ExceptionLogger exceptionLogger = new ExceptionLogger(JWT.class);
     
     public static String createJWT(Users u){
         Instant now = Instant.now();

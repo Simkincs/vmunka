@@ -1,7 +1,7 @@
-com\vizsga\vizsgaprojekt\modell\TestsResult.class
 com\vizsga\vizsgaprojekt\modell\Grades.class
 com\vizsga\vizsgaprojekt\modell\Courses.class
-com\vizsga\vizsgaprojekt\modell\Lessons.class
 com\vizsga\vizsgaprojekt\modell\TestsQuestion.class
 com\vizsga\vizsgaprojekt\modell\Users.class
+com\vizsga\vizsgaprojekt\modell\TestsResult.class
+com\vizsga\vizsgaprojekt\modell\Lessons.class
 com\vizsga\vizsgaprojekt\modell\Tests.class

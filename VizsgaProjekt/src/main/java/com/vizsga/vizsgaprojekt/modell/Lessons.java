@@ -20,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -27,6 +28,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "lessons")
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Lessons.findAll", query = "SELECT l FROM Lessons l"),
     @NamedQuery(name = "Lessons.findById", query = "SELECT l FROM Lessons l WHERE l.id = :id"),
