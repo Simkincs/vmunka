@@ -9,11 +9,14 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Persistence;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -90,14 +93,37 @@ public class Users implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.vizsga_VizsgaProjekt_war_1.0-SNAPSHOTPU");
+    
     public Users() {
     }
 
     public Users(Integer id) {
-        this.id = id;
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Users u = em.find(Users.class, id);
+            
+            this.id = u.getId();
+            this.email = u.getEmail();
+            this.firstName = u.getFirstName();
+            this.lastName = u.getLastName();
+            this.password = u.getPassword();
+            this.coursesId = u.getCoursesId();
+            this.isAdmin = u.getIsAdmin();
+            this.isDeleted = u.getIsDeleted();
+            this.createdAt = u.getCreatedAt();
+            this.deletedAt = u.getDeletedAt();
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+        }finally{
+            em.clear();
+            em.close();
+        }
     }
 
-    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt) {
+    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -107,6 +133,7 @@ public class Users implements Serializable {
         this.isAdmin = isAdmin;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
     }
 
     public Integer getId() {
