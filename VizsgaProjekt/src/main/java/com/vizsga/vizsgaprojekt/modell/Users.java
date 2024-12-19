@@ -5,7 +5,9 @@
 package com.vizsga.vizsgaprojekt.modell;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +18,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.ParameterMode;
 import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -239,6 +243,50 @@ public class Users implements Serializable {
     @Override
     public String toString() {
         return "com.vizsga.vizsgaprojekt.modell.Users[ id=" + id + " ]";
+    }
+    
+    public Users login(String email, String password){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("login");
+            
+            spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("passwordIN", String.class, ParameterMode.IN);
+            
+            spq.setParameter("emailIN", email);
+            spq.setParameter("passwordIN", password);
+            
+            spq.execute();
+            
+            List<Object[]> resultList = spq.getResultList();
+            Users toReturn = new Users();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(Object[] o : resultList){
+                Users u = new Users(
+                        Integer.valueOf(o[0].toString()),
+                        o[1].toString(),
+                        o[2].toString(),
+                        o[3].toString(),
+                        o[4].toString(),
+                        Integer.parseInt(o[5].toString()),
+                        Boolean.parseBoolean(o[6].toString()),
+                        Boolean.parseBoolean(o[7].toString()),
+                        formatter.parse(o[8].toString()),
+                        o[9] == null ? null : formatter.parse(o[9].toString())
+                );
+                return u;
+            }
+            return  toReturn;
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
     }
     
 }
