@@ -4,12 +4,14 @@
  */
 package com.vizsga.vizsgaprojekt.controller;
 
+import com.vizsga.vizsgaprojekt.modell.Users;
 import com.vizsga.vizsgaprojekt.service.UsersService;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
@@ -65,4 +67,22 @@ public class UsersController {
         
         return Response.status(obj.getInt("statusCode")).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
     }
+    
+    @POST
+    @Path("registerAdmin")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response registerAdmin(@HeaderParam("token") String jwt, String bodyString){
+        JSONObject body = new JSONObject(bodyString);
+        
+        Users u = new Users(
+                body.getString("email"),
+                body.getString("firtName"),
+                body.getString("lastName"),
+                body.getString("password")
+        );
+        
+        JSONObject obj = layer.registerAdmin(u, jwt);
+        
+        return Response.status(obj.getInt("statusCode")).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
+    } 
 }

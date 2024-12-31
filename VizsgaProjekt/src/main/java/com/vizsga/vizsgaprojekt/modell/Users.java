@@ -139,6 +139,13 @@ public class Users implements Serializable {
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
     }
+    
+    public Users(String email, String firsName, String lastName, String password){
+        this.email = email;
+        this.firstName = firsName;
+        this.lastName = lastName;
+        this.password = password;
+    }
 
     public Integer getId() {
         return id;
@@ -280,6 +287,59 @@ public class Users implements Serializable {
             }
             return  toReturn;
             
+        } catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public static Boolean isUsersExists(String email){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("isUsersExists");
+            
+            spq.registerStoredProcedureParameter("emailIN", String.class , ParameterMode.IN);
+            spq.registerStoredProcedureParameter("resultOUT", String.class , ParameterMode.OUT);
+            
+            spq.setParameter("emailIN", email);
+            
+            spq.execute();
+            
+            Boolean result = Boolean.valueOf(spq.getOutputParameterValue("resultOUT").toString());
+            
+            return result;
+        } catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public Boolean registerAdmin(Users u){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("registerAdmin");
+            
+            spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("firstNameIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("lastNameIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("passwordIN", String.class, ParameterMode.IN);
+            
+            spq.setParameter("emailIN", u.getEmail());
+            spq.setParameter("firstNameIN", u.getFirstName());
+            spq.setParameter("lastNameIN", u.getLastName());
+            spq.setParameter("passwordIN", u.getPassword());
+            
+            spq.execute();
+            
+            return true;
         } catch (Exception e) {
             System.err.println("Hiba: "+ e.getLocalizedMessage());
             return null;

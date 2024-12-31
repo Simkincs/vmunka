@@ -84,4 +84,45 @@ public class UsersService {
         toReturn.put("statusCode", statusCode);
         return toReturn;
     }
+    
+    public JSONObject registerAdmin(Users u, String jwt){
+        JSONObject toReturn = new JSONObject();
+        String status = "success";
+        int statusCode = 200;
+        
+        if (JWT.isAdmin(jwt)) {
+            if (isValidPassword(u.getPassword())) {
+                if(isValidEmail(u.getEmail())){
+                    boolean userIsExists = Users.isUsersExists(u.getEmail());
+                    
+                    if (Users.isUsersExists(u.getEmail()) == null) {
+                        status = "ModelExeption";
+                        statusCode = 500;
+                    }else if(userIsExists == true){
+                        status = "UserAlreadyExists";
+                        statusCode = 417;
+                    }else{
+                        boolean registerAdmin = layer.registerAdmin(u);
+                        if(registerAdmin == false){
+                            status = "fail";
+                            statusCode = 417;
+                        }
+                    }
+                }else{
+                   status = "InvalidEmail";
+                   statusCode = 417; 
+                }
+            }else{
+                status = "InvalidPassword";
+                statusCode = 417;
+            }
+        }else{
+            status = "PermissonError";
+            statusCode = 417;
+        }
+        
+        toReturn.put("status", status);
+        toReturn.put("statusCode", statusCode);
+        return toReturn;
+    }
 }
