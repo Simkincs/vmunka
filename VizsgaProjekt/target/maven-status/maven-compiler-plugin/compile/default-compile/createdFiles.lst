@@ -1,7 +1,12 @@
+com\vizsga\vizsgaprojekt\controller\UsersController.class
+com\vizsga\vizsgaprojekt\controller\ApplicationConfig.class
 com\vizsga\vizsgaprojekt\modell\Grades.class
 com\vizsga\vizsgaprojekt\modell\Courses.class
 com\vizsga\vizsgaprojekt\modell\TestsQuestion.class
 com\vizsga\vizsgaprojekt\modell\Users.class
+com\vizsga\vizsgaprojekt\service\UsersService.class
+com\vizsga\vizsgaprojekt\config\JWT.class
+com\vizsga\vizsgaprojekt\exceptionLogger\ExceptionLogger.class
 com\vizsga\vizsgaprojekt\modell\TestsResult.class
 com\vizsga\vizsgaprojekt\modell\Lessons.class
 com\vizsga\vizsgaprojekt\modell\Tests.class
