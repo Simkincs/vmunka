@@ -71,7 +71,7 @@ public class UsersController {
         return Response.status(obj.getInt("statusCode")).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
     }
     
-    /*
+    
     @POST
     @Path("registerAdmin")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -89,17 +89,13 @@ public class UsersController {
         
         return Response.status(obj.getInt("statusCode")).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
     } 
-    */
+    
 
     @POST
     @Path("registerUser")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response registerUser(String bodyString){
         JSONObject body = new JSONObject(bodyString);
-        
-        
-        
-        
         
         Users u = new Users(
                 body.getString("email"),
@@ -145,6 +141,25 @@ public class UsersController {
             return Response.status(400).entity("TokenExpireds").type(MediaType.APPLICATION_JSON).build();
         }
         
+    }
+    
+    @POST
+    @Path("sendEmail")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response sendEmail(@HeaderParam("token") String jwt, String bodyString){
+        int isValid = JWT.validateJWT(jwt);
+        
+        if(isValid == 1){
+            JSONObject body = new JSONObject(bodyString);
+            
+            Boolean obj = Users.sendEmail(body.getString("to"), body.getBoolean("ccMe"));
+            return Response.status(200).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
+        }else if(isValid == 2){
+            return Response.status(498).entity("InvalidToken").type(MediaType.APPLICATION_JSON).build();
+        }else{
+            return Response.status(401).entity("TokenExpireds").type(MediaType.APPLICATION_JSON).build();
+        }
+            
     }
     
 }

@@ -9,4 +9,5 @@ com\vizsga\vizsgaprojekt\config\JWT.class
 com\vizsga\vizsgaprojekt\exceptionLogger\ExceptionLogger.class
 com\vizsga\vizsgaprojekt\modell\TestsResult.class
 com\vizsga\vizsgaprojekt\modell\Lessons.class
+com\vizsga\vizsgaprojekt\modell\Users$1.class
 com\vizsga\vizsgaprojekt\modell\Tests.class

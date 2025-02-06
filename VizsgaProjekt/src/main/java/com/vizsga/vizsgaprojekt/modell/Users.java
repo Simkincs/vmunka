@@ -5,10 +5,17 @@
 package com.vizsga.vizsgaprojekt.modell;
 
 import java.io.Serializable;
+import javax.mail.PasswordAuthentication;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -299,22 +306,22 @@ public class Users implements Serializable {
     
     public static Boolean isUserExists(String email){
         EntityManager em = emf.createEntityManager();
-        
+
         try {
             StoredProcedureQuery spq = em.createStoredProcedureQuery("isUserExists");
-            
-            spq.registerStoredProcedureParameter("emailIN", String.class , ParameterMode.IN);
-            spq.registerStoredProcedureParameter("resultOUT", String.class , ParameterMode.OUT);
-            
+
+            spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("resultOUT", Boolean.class, ParameterMode.OUT);
+
             spq.setParameter("emailIN", email);
-            
+
             spq.execute();
-            
+
             Boolean result = Boolean.valueOf(spq.getOutputParameterValue("resultOUT").toString());
-            
             return result;
-        } catch (Exception e) {
-            System.err.println("Hiba: "+ e.getLocalizedMessage());
+
+        }catch(Exception e){
+            System.err.println("Hiba: " + e.getLocalizedMessage());
             return null;
         }finally{
             em.clear();
@@ -322,7 +329,7 @@ public class Users implements Serializable {
         }
     }
     
-    /*
+    
     public Boolean registerAdmin(Users u){
         EntityManager em = emf.createEntityManager();
         
@@ -350,30 +357,31 @@ public class Users implements Serializable {
             em.close();
         }
     }
-    */
+    
     
     public Boolean registerUser(Users u){
         EntityManager em = emf.createEntityManager();
-        
-        try{
+
+        try {
             StoredProcedureQuery spq = em.createStoredProcedureQuery("registerUser");
-            
+
             spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
             spq.registerStoredProcedureParameter("firstNameIN", String.class, ParameterMode.IN);
             spq.registerStoredProcedureParameter("lastNameIN", String.class, ParameterMode.IN);
             spq.registerStoredProcedureParameter("passwordIN", String.class, ParameterMode.IN);
-            
+
             spq.setParameter("emailIN", u.getEmail());
             spq.setParameter("firstNameIN", u.getFirstName());
             spq.setParameter("lastNameIN", u.getLastName());
             spq.setParameter("passwordIN", u.getPassword());
-        
+
             spq.execute();
-            
+
             return true;
+
         }catch(Exception e){
-            System.err.println("Hiba"+ e.getClass().getName() + "-" +e.getLocalizedMessage());
-            return false;
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+            return null;
         }finally{
             em.clear();
             em.close();
@@ -442,6 +450,47 @@ public class Users implements Serializable {
         }finally{
             em.clear();
             em.close();
+        }
+    }
+    
+    public static Boolean sendEmail(String to, boolean ccMe){
+        try {
+            //Emailt küldő email címe és alkalmazás jelszó
+            final String from = "simonkincso2002@gmail.com";
+            //Google alkalmazás jelszó netneans
+            final String passwordApp = "bpip gaqn mfoq tako";
+            
+            //Tulajdonságok beállítása
+            String host = "smtp.gmail.com";
+
+            Properties properties = System.getProperties();
+
+            properties.put("mail.smtp.host", host);
+            properties.put("mail.smtp.port", "465");
+            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.auth", "true");
+            
+            //Application password beállítása az email címhez és session config
+            Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(from, passwordApp);
+                }
+            });
+            session.setDebug(true);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject("Teszt email");
+            
+            String msg = "Email tartalma, lehet naggyon hosszu is, lehet html is.";
+            message.setContent(msg, "text/html;charset=utf-8");
+            
+            Transport.send(message);
+            
+            return true;
+        } catch (Exception e) {
+            System.err.println("Hiba:" + e.getLocalizedMessage());
+            return false;
         }
     }
     

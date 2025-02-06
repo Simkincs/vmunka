@@ -87,7 +87,7 @@ public class UsersService {
         return toReturn;
     }
     
-    /*
+    
     public JSONObject registerAdmin(Users u, String jwt){
         JSONObject toReturn = new JSONObject();
         String status = "success";
@@ -130,52 +130,50 @@ public class UsersService {
         return toReturn;
     }
 
-*/
-    
-    public JSONObject registerUser(Users u){
-        JSONObject toReturn = new JSONObject();
-        String status = "success";
-        int statusCode = 200;
-        
-        
-        
-        
+
+       
         //szükséges validációk
         //Email cím van-e a db-ben
         //Valid-e az email cím
         //Valid-e a jelszó
         
-        if(isValidEmail(u.getEmail())){
-            if(isValidPassword(u.getPassword())){
-               
-                boolean userIsExists = Users.isUserExists(u.getEmail());
-               
-               if(Users.isUserExists(u.getEmail()) == null){
-                   status = "ModelExeption";
-                   statusCode = 500;
-               }else if(userIsExists == true){
-                   status = "UseAlredyExists";
-                   statusCode = 417;
-               }else{
-                   boolean registerUser = layer.registerUser(u);
-                   if(registerUser == false){
-                       status = "fail";
-                       statusCode = 417;
-                   }
-               }
-            }else{
-                status = "InvalidPassword";
+    
+    public JSONObject registerUser(Users u) {
+    JSONObject toReturn = new JSONObject();
+    String status = "success";
+    int statusCode = 200;
+
+    if (isValidEmail(u.getEmail())) {
+        if (isValidPassword(u.getPassword())) {
+            Boolean userExists = Users.isUserExists(u.getEmail()); // Ellenőrizzük, hogy létezik-e már a felhasználó
+
+            if (userExists == null) { // Ha a lekérdezés null-t ad vissza, valami hiba történt
+                status = "ModelException";
+                statusCode = 500;
+            } else if (userExists) { // Ha a felhasználó már létezik
+                status = "UserAlreadyExists";
                 statusCode = 417;
+            } else { // Ha minden rendben van, regisztráljuk a felhasználót
+                boolean registerSuccess = layer.registerUser(u);
+                if (!registerSuccess) {
+                    status = "fail";
+                    statusCode = 417;
+                }
             }
-        }else{
-            status = "IvalidEmail";
+        } else {
+            status = "InvalidPassword";
             statusCode = 417;
         }
-        
-        toReturn.put("status", status);
-        toReturn.put("statusCode", statusCode);
-        return toReturn;
+    } else {
+        status = "InvalidEmail";
+        statusCode = 417;
     }
+
+    toReturn.put("status", status);
+    toReturn.put("statusCode", statusCode);
+    return toReturn;
+}
+
     
     public JSONObject getAllUser(){
         JSONObject toReturn = new JSONObject();
