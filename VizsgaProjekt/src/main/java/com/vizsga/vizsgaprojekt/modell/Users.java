@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
     @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
-    @NamedQuery(name = "Users.findByCoursesId", query = "SELECT u FROM Users u WHERE u.coursesId = :coursesId"),
     @NamedQuery(name = "Users.findByIsAdmin", query = "SELECT u FROM Users u WHERE u.isAdmin = :isAdmin"),
     @NamedQuery(name = "Users.findByIsDeleted", query = "SELECT u FROM Users u WHERE u.isDeleted = :isDeleted"),
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt"),
@@ -58,6 +57,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static Users getUserById() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -84,10 +87,6 @@ public class Users implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "courses_id")
-    private int coursesId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_admin")
@@ -121,7 +120,6 @@ public class Users implements Serializable {
             this.firstName = u.getFirstName();
             this.lastName = u.getLastName();
             this.password = u.getPassword();
-            this.coursesId = u.getCoursesId();
             this.isAdmin = u.getIsAdmin();
             this.isDeleted = u.getIsDeleted();
             this.createdAt = u.getCreatedAt();
@@ -135,13 +133,12 @@ public class Users implements Serializable {
         }
     }
 
-    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
+    public Users(Integer id, String email, String firstName, String lastName, String password, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.coursesId = coursesId;
         this.isAdmin = isAdmin;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
@@ -195,14 +192,6 @@ public class Users implements Serializable {
         this.password = password;
     }
 
-    public int getCoursesId() {
-        return coursesId;
-    }
-
-    public void setCoursesId(int coursesId) {
-        this.coursesId = coursesId;
-    }
-
     public boolean getIsAdmin() {
         return isAdmin;
     }
@@ -234,6 +223,7 @@ public class Users implements Serializable {
     public void setDeletedAt(Date deletedAt) {
         this.deletedAt = deletedAt;
     }
+    
 
     @Override
     public int hashCode() {
@@ -285,11 +275,10 @@ public class Users implements Serializable {
                         o[2].toString(),
                         o[3].toString(),
                         o[4].toString(),
-                        Integer.parseInt(o[5].toString()),
+                        Boolean.parseBoolean(o[5].toString()),
                         Boolean.parseBoolean(o[6].toString()),
-                        Boolean.parseBoolean(o[7].toString()),
-                        formatter.parse(o[8].toString()),
-                        o[9] == null ? null : formatter.parse(o[9].toString())
+                        formatter.parse(o[7].toString()),
+                        o[8] == null ? null : formatter.parse(o[8].toString())
                 );
                 return u;
             }
@@ -329,6 +318,48 @@ public class Users implements Serializable {
         }
     }
     
+    public static Users getUserById(Integer id){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("getUserById");
+            
+            spq.registerStoredProcedureParameter("userIdIN", Integer.class, ParameterMode.IN);
+            spq.setParameter("userIdIN", id);
+            
+            List<Object[]> resultList = spq.getResultList();
+            
+            if(resultList.isEmpty()){
+                return null; //Nincs ilyen id felhasználó
+            }
+            
+            Users toReturn = new Users();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(Object[] o : resultList){
+                Users u = new Users(
+                        Integer.valueOf(o[0].toString()),
+                        o[1].toString(),
+                        o[2].toString(),
+                        o[3].toString(),
+                        o[4].toString(),
+                        Boolean.parseBoolean(o[5].toString()),
+                        Boolean.parseBoolean(o[6].toString()),
+                        formatter.parse(o[7].toString()),
+                        o[8] == null ? null : formatter.parse(o[8].toString())
+                );
+                return u;
+            }
+            return  toReturn;
+            
+        }  catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+        
+    }
     
     public Boolean registerAdmin(Users u){
         EntityManager em = emf.createEntityManager();
@@ -402,17 +433,16 @@ public class Users implements Serializable {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             
             for(Object[] record : resultList){
-                Users u = new Users(
+                 Users u = new Users(
                         Integer.valueOf(record[0].toString()),
                         record[1].toString(),
                         record[2].toString(),
                         record[3].toString(),
                         record[4].toString(),
-                        Integer.parseInt(record[5].toString()),
+                        Boolean.parseBoolean(record[5].toString()),
                         Boolean.parseBoolean(record[6].toString()),
-                        Boolean.parseBoolean(record[7].toString()),
-                        formatter.parse(record[8].toString()),
-                        record[9] == null ? null : formatter.parse(record[9].toString())
+                        formatter.parse(record[7].toString()),
+                        record[8] == null ? null : formatter.parse(record[8].toString())
                 );
                 toReturn.add(u);
             }
@@ -480,6 +510,12 @@ public class Users implements Serializable {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            
+            //Több címzet
+            if(ccMe){
+                message.addRecipient(Message.RecipientType.CC, new InternetAddress(from));
+            }
+            
             message.setSubject("Teszt email");
             
             String msg = "Email tartalma, lehet naggyon hosszu is, lehet html is.";

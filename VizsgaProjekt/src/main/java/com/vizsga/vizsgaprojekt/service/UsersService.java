@@ -66,16 +66,28 @@ public class UsersService {
                     status = "userNotFound";
                     statusCode = 417;
                 }else{
-                    JSONObject result = new JSONObject();
-                    result.put("id", modelResult.getId());
-                    result.put("email", modelResult.getEmail());
-                    result.put("firstName", modelResult.getFirstName());
-                    result.put("lastName", modelResult.getLastName());
-                    result.put("isAdmin", modelResult.getIsAdmin());
-                    result.put("isDelete", modelResult.getIsDeleted());
-                    result.put("jwt", JWT.createJWT(modelResult));
+                    if(modelResult.getIsAdmin() == true){
+                        JSONObject result = new JSONObject();
+                        result.put("id", modelResult.getId());
+                        result.put("email", modelResult.getEmail());
+                        result.put("firstName", modelResult.getFirstName());
+                        result.put("lastName", modelResult.getLastName());
+                        result.put("isAdmin", modelResult.getIsAdmin());
+                        result.put("isDelete", modelResult.getIsDeleted());
+                        result.put("jwt", JWT.createJWT(modelResult));
                     
-                    toReturn.put("result", result);
+                        toReturn.put("result", result);
+                    }else{
+                        JSONObject result = new JSONObject();
+                        result.put("id", modelResult.getId());
+                        result.put("email", modelResult.getEmail());
+                        result.put("firstName", modelResult.getFirstName());
+                        result.put("lastName", modelResult.getLastName());
+                        result.put("isAdmin", modelResult.getIsAdmin());
+                        result.put("isDelete", modelResult.getIsDeleted());
+                    
+                        toReturn.put("result", result);
+                    }
                 }
             }
         }else{
