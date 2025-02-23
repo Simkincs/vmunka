@@ -6,6 +6,7 @@ package com.vizsga.vizsgaprojekt.config;
 
 
 import com.vizsga.vizsgaprojekt.exceptionLogger.ExceptionLogger;
+import com.vizsga.vizsgaprojekt.modell.Tokens;
 import com.vizsga.vizsgaprojekt.modell.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,7 +48,7 @@ public class JWT {
                         Decoders.BASE64.decode(SIGN)
                 )
                 .compact();
-          
+        
         return token;
     }
     
@@ -56,6 +57,7 @@ public class JWT {
             Jws<Claims> result;
             result = Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(SECRET)).parseClaimsJws(jwt);
             int id = result.getBody().get("id", Integer.class);
+            Tokens t = new Tokens(); //Tokenek fillterelése ami megegyezik a user id-val a token stringel
             Users u = new Users(id);
         
             if(u.getId() == id){

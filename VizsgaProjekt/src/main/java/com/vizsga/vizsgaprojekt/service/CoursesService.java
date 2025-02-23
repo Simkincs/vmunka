@@ -4,6 +4,7 @@
  */
 package com.vizsga.vizsgaprojekt.service;
 
+import com.vizsga.vizsgaprojekt.config.JWT;
 import com.vizsga.vizsgaprojekt.modell.Courses;
 import com.vizsga.vizsgaprojekt.modell.Users;
 import org.json.JSONObject;
@@ -15,39 +16,36 @@ import org.json.JSONObject;
 public class CoursesService {
     private Courses layer = new Courses();
 
-    public JSONObject addCourses(Courses c, Users u){
+    
+    public JSONObject addCourses(Courses c, String jwt){
         JSONObject toReturn = new JSONObject();
         String status = "success";
         int statusCode = 200;
         
-        Users currentUser = Users.getUserById();
-        
-        // Csak admin felhasználók adhatnak hozzá kurzust
-        if(currentUser == null){
-            status = "UserNotFound";
+        if(JWT.validateJWT(jwt) != 1){
+            status = "IvalidJWT";
             statusCode = 404;
+        }else if(!JWT.isAdmin(jwt)){ // Csak admin felhasználók adhatnak hozzá kurzust
+            status = "Unauthorized";
+            statusCode = 403;
         }else{
-            if(!currentUser.getIsAdmin()){
-                status = "Unauthorized";
-                statusCode = 403;
+            if(c.getName().isEmpty()){
+                status = "CoursesNameEmpty";
+                statusCode = 417;
             }else{
-                if(c.getName().isEmpty()){
-                    status = "CoursesNameEmpty";
+                if(c.getDescription().isEmpty()){
+                    status = "CoursesDescriptionEmpty";
                     statusCode = 417;
                 }else{
-                    if(c.getDescription().isEmpty()){
-                        status = "CoursesDescriptionEmpty";
+                    boolean addSuccess = layer.addCourses(c);
+                    if(!addSuccess){
+                        status = "fail";
                         statusCode = 417;
-                    }else{
-                        boolean addSuccess = layer.addCourses(c);
-                        if(!addSuccess){
-                            status = "fail";
-                            statusCode = 417;
-                        }
                     }
                 }
             }
         }
+        
         
         
         toReturn.put("status", status);

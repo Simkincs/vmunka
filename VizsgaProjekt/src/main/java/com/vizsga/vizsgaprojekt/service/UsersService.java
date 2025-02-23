@@ -5,6 +5,7 @@
 package com.vizsga.vizsgaprojekt.service;
 
 import com.vizsga.vizsgaprojekt.config.JWT;
+import com.vizsga.vizsgaprojekt.modell.Tokens;
 import com.vizsga.vizsgaprojekt.modell.Users;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
  */
 public class UsersService {
     private Users layer = new Users();
+    private Tokens tokensRepository = new Tokens();
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     
     public static boolean isValidEmail(String email){
@@ -67,6 +69,7 @@ public class UsersService {
                     statusCode = 417;
                 }else{
                     if(modelResult.getIsAdmin() == true){
+                        String token = JWT.createJWT(modelResult);
                         JSONObject result = new JSONObject();
                         result.put("id", modelResult.getId());
                         result.put("email", modelResult.getEmail());
@@ -74,18 +77,9 @@ public class UsersService {
                         result.put("lastName", modelResult.getLastName());
                         result.put("isAdmin", modelResult.getIsAdmin());
                         result.put("isDelete", modelResult.getIsDeleted());
-                        result.put("jwt", JWT.createJWT(modelResult));
-                    
-                        toReturn.put("result", result);
-                    }else{
-                        JSONObject result = new JSONObject();
-                        result.put("id", modelResult.getId());
-                        result.put("email", modelResult.getEmail());
-                        result.put("firstName", modelResult.getFirstName());
-                        result.put("lastName", modelResult.getLastName());
-                        result.put("isAdmin", modelResult.getIsAdmin());
-                        result.put("isDelete", modelResult.getIsDeleted());
-                    
+                        result.put("jwt", token);
+                        tokensRepository.saveToken(modelResult.getId(), token);
+                        
                         toReturn.put("result", result);
                     }
                 }

@@ -9,12 +9,17 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,19 +72,39 @@ public class Tokens implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.vizsga_VizsgaProjekt_war_1.0-SNAPSHOTPU");
+    
     public Tokens() {
     }
 
     public Tokens(Integer id) {
-        this.id = id;
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Tokens t = em.find(Tokens.class , token);
+            
+            this.id = t.getId();
+            this.userId = t.getUserId();
+            this.token = t.getToken();
+            this.isDeleted = t.getIsDeleted();
+            this.createdAt = t.getCreatedAt();
+            this.deletedAt = t.getDeletedAt();
+            
+        }  catch (Exception e) {
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+        }finally{
+            em.clear();
+            em.close();
+        }
     }
 
-    public Tokens(Integer id, int userId, String token, boolean isDeleted, Date createdAt) {
+    public Tokens(Integer id, int userId, String token, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.userId = userId;
         this.token = token;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
     }
 
     public Integer getId() {
@@ -153,6 +178,28 @@ public class Tokens implements Serializable {
     @Override
     public String toString() {
         return "com.vizsga.vizsgaprojekt.modell.Tokens[ id=" + id + " ]";
+    }
+    
+    public static void saveToken(Integer userId, String token) {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("saveToken");
+            
+            spq.registerStoredProcedureParameter("userIdIN", Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("tokenIN", String.class, ParameterMode.IN);
+            
+            spq.setParameter("userIdIN", userId);
+            spq.setParameter("tokenIN", token);
+            
+            spq.execute();
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+        }finally{
+            em.clear();
+            em.close();
+        }
     }
     
 }

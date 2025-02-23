@@ -204,7 +204,7 @@ public class Courses implements Serializable {
             return true;
         } catch (Exception e) {
             System.err.println("Hiba"+e.getLocalizedMessage());
-            return null;
+            return false;
         }finally{
             em.clear();
             em.close();

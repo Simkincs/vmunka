@@ -12,6 +12,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
@@ -61,11 +62,8 @@ public class CoursesController {
     @POST
     @Path("addCourses")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addCourses(String bodyString){
+    public Response addCourses(@HeaderParam("token") String jwt, String bodyString){
         JSONObject body = new JSONObject(bodyString);
-        
-        //Kell a jelenlegi Felhasználó lekérdezésére egy metódus
-        Users u = Users.getUserById();
         
         Courses c = new Courses(
                 body.getString("name"),
@@ -73,7 +71,7 @@ public class CoursesController {
                 
         );
         
-        JSONObject obj = layer.addCourses(c, u);
+        JSONObject obj = layer.addCourses(c, jwt);
         
         return Response.status(obj.getInt("statusCode")).entity(obj.toString()).type(MediaType.APPLICATION_JSON).build();
     }
