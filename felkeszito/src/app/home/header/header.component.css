@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f2937;
+    padding: 15px 20px;
+    color: white;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.search-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    width: 50%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.user {
+    font-size: 1rem;
+    font-weight: medium;
+}
