@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="screen">
+    <div class="screen__content">
+      <form class="login" (ngSubmit)="login()">  <!-- HIBÁS onsubmit helyett ngSubmit -->
+        <div class="login__field">
+          <i class="login__icon fas fa-user"></i>
+          <input type="email" class="login__input" placeholder="Email" [(ngModel)]="email" name="email">  <!-- NGMODEL! -->
+        </div>
+        <div class="login__field">
+          <i class="login__icon fas fa-lock"></i>
+          <input type="password" class="login__input" placeholder="Password" [(ngModel)]="password" name="password">  <!-- NGMODEL! -->
+        </div>
+        <button type="submit" class="button login__submit">  <!-- type="submit" kell -->
+          <span class="button__text">Login</span>
+          <i class="button__icon fas fa-chevron-right"></i>
+        </button>
+      </form>
+      <div class="social-register">
+        <button class="register-button" (click)="navigateToRegister()">Sign in</button>
+      </div>
+    </div>
+    <div class="screen__background">
+      <span class="screen__background__shape screen__background__shape4"></span>
+      <span class="screen__background__shape screen__background__shape3"></span>    
+      <span class="screen__background__shape screen__background__shape2"></span>
+      <span class="screen__background__shape screen__background__shape1"></span>
+    </div>    
+  </div>
+</div>
