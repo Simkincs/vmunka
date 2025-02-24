@@ -5,7 +5,6 @@
 package com.vizsga.vizsgaprojekt.controller;
 
 import com.vizsga.vizsgaprojekt.modell.Courses;
-import com.vizsga.vizsgaprojekt.modell.Users;
 import com.vizsga.vizsgaprojekt.service.CoursesService;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;

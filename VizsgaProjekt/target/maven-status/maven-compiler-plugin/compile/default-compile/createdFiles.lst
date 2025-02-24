@@ -6,6 +6,7 @@ com\vizsga\vizsgaprojekt\modell\Grades.class
 com\vizsga\vizsgaprojekt\modell\Courses.class
 com\vizsga\vizsgaprojekt\modell\TestsAnswers.class
 com\vizsga\vizsgaprojekt\modell\TestsQuestion.class
+com\vizsga\vizsgaprojekt\service\LessonsService.class
 com\vizsga\vizsgaprojekt\modell\Users.class
 com\vizsga\vizsgaprojekt\service\UsersService.class
 com\vizsga\vizsgaprojekt\modell\Tokens.class
@@ -13,6 +14,7 @@ com\vizsga\vizsgaprojekt\controller\CoursesController.class
 com\vizsga\vizsgaprojekt\config\JWT.class
 com\vizsga\vizsgaprojekt\exceptionLogger\ExceptionLogger.class
 com\vizsga\vizsgaprojekt\modell\TestsResult.class
+com\vizsga\vizsgaprojekt\controller\LessonController.class
 com\vizsga\vizsgaprojekt\modell\Lessons.class
 com\vizsga\vizsgaprojekt\modell\Users$1.class
 com\vizsga\vizsgaprojekt\modell\Badges.class

@@ -21,6 +21,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.vizsga.vizsgaprojekt.controller.CoursesController.class);
+        resources.add(com.vizsga.vizsgaprojekt.controller.LessonController.class);
         resources.add(com.vizsga.vizsgaprojekt.controller.UsersController.class);
     }
 

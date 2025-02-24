@@ -1,4 +1,5 @@
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\Tokens.java
+D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\service\LessonsService.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\Badges.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\service\UsersService.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\TestsResult.java
@@ -8,6 +9,7 @@ D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\mode
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\controller\CoursesController.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\Lessons.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\TestsQuestion.java
+D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\controller\LessonController.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\Courses.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\modell\Tests.java
 D:\Vizsga_Munka\vmunka\VizsgaProjekt\src\main\java\com\vizsga\vizsgaprojekt\controller\ApplicationConfig.java
