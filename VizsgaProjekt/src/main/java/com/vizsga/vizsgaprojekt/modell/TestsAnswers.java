@@ -30,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TestsAnswers.findById", query = "SELECT t FROM TestsAnswers t WHERE t.id = :id"),
     @NamedQuery(name = "TestsAnswers.findByTestsId", query = "SELECT t FROM TestsAnswers t WHERE t.testsId = :testsId"),
     @NamedQuery(name = "TestsAnswers.findByAnswer", query = "SELECT t FROM TestsAnswers t WHERE t.answer = :answer"),
-    @NamedQuery(name = "TestsAnswers.findByValideAnswer", query = "SELECT t FROM TestsAnswers t WHERE t.valideAnswer = :valideAnswer"),
-    @NamedQuery(name = "TestsAnswers.findByRightAnswer", query = "SELECT t FROM TestsAnswers t WHERE t.rightAnswer = :rightAnswer")})
+    @NamedQuery(name = "TestsAnswers.findByValideAnswer", query = "SELECT t FROM TestsAnswers t WHERE t.valideAnswer = :valideAnswer")})
 public class TestsAnswers implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,11 +52,6 @@ public class TestsAnswers implements Serializable {
     @NotNull
     @Column(name = "valide_answer")
     private boolean valideAnswer;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "right_answer")
-    private String rightAnswer;
 
     public TestsAnswers() {
     }
@@ -66,12 +60,11 @@ public class TestsAnswers implements Serializable {
         this.id = id;
     }
 
-    public TestsAnswers(Integer id, int testsId, String answer, boolean valideAnswer, String rightAnswer) {
+    public TestsAnswers(Integer id, int testsId, String answer, boolean valideAnswer) {
         this.id = id;
         this.testsId = testsId;
         this.answer = answer;
         this.valideAnswer = valideAnswer;
-        this.rightAnswer = rightAnswer;
     }
 
     public Integer getId() {
@@ -104,14 +97,6 @@ public class TestsAnswers implements Serializable {
 
     public void setValideAnswer(boolean valideAnswer) {
         this.valideAnswer = valideAnswer;
-    }
-
-    public String getRightAnswer() {
-        return rightAnswer;
-    }
-
-    public void setRightAnswer(String rightAnswer) {
-        this.rightAnswer = rightAnswer;
     }
 
     @Override

@@ -18,7 +18,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,10 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TestsResult.findAll", query = "SELECT t FROM TestsResult t"),
     @NamedQuery(name = "TestsResult.findById", query = "SELECT t FROM TestsResult t WHERE t.id = :id"),
     @NamedQuery(name = "TestsResult.findByPoint", query = "SELECT t FROM TestsResult t WHERE t.point = :point"),
-    @NamedQuery(name = "TestsResult.findByComment", query = "SELECT t FROM TestsResult t WHERE t.comment = :comment"),
-    @NamedQuery(name = "TestsResult.findByTestsId", query = "SELECT t FROM TestsResult t WHERE t.testsId = :testsId"),
+    @NamedQuery(name = "TestsResult.findByTestsAnswersId", query = "SELECT t FROM TestsResult t WHERE t.testsAnswersId = :testsAnswersId"),
     @NamedQuery(name = "TestsResult.findByGradeId", query = "SELECT t FROM TestsResult t WHERE t.gradeId = :gradeId"),
-    @NamedQuery(name = "TestsResult.findByUsersId", query = "SELECT t FROM TestsResult t WHERE t.usersId = :usersId"),
     @NamedQuery(name = "TestsResult.findByCreatedAt", query = "SELECT t FROM TestsResult t WHERE t.createdAt = :createdAt")})
 public class TestsResult implements Serializable {
 
@@ -51,21 +48,12 @@ public class TestsResult implements Serializable {
     private int point;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "comment")
-    private String comment;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "tests_id")
-    private int testsId;
+    @Column(name = "tests_answers_id")
+    private int testsAnswersId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "grade_id")
     private int gradeId;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "users_id")
-    private int usersId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_at")
@@ -79,13 +67,11 @@ public class TestsResult implements Serializable {
         this.id = id;
     }
 
-    public TestsResult(Integer id, int point, String comment, int testsId, int gradeId, int usersId, Date createdAt) {
+    public TestsResult(Integer id, int point, int testsAnswersId, int gradeId, Date createdAt) {
         this.id = id;
         this.point = point;
-        this.comment = comment;
-        this.testsId = testsId;
+        this.testsAnswersId = testsAnswersId;
         this.gradeId = gradeId;
-        this.usersId = usersId;
         this.createdAt = createdAt;
     }
 
@@ -105,20 +91,12 @@ public class TestsResult implements Serializable {
         this.point = point;
     }
 
-    public String getComment() {
-        return comment;
+    public int getTestsAnswersId() {
+        return testsAnswersId;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getTestsId() {
-        return testsId;
-    }
-
-    public void setTestsId(int testsId) {
-        this.testsId = testsId;
+    public void setTestsAnswersId(int testsAnswersId) {
+        this.testsAnswersId = testsAnswersId;
     }
 
     public int getGradeId() {
@@ -127,14 +105,6 @@ public class TestsResult implements Serializable {
 
     public void setGradeId(int gradeId) {
         this.gradeId = gradeId;
-    }
-
-    public int getUsersId() {
-        return usersId;
-    }
-
-    public void setUsersId(int usersId) {
-        this.usersId = usersId;
     }
 
     public Date getCreatedAt() {

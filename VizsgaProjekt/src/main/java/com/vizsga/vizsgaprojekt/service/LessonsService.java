@@ -31,8 +31,8 @@ public class LessonsService {
                 status = "LessonTitleEmpty";
                 statusCode = 417;
             }else{
-                if(l.getContens().isEmpty()){//Ha a lecke tartalát üres
-                    status = "CoursesContentEmpty";
+                if(l.getContens().isEmpty()){//Ha a lecke tartalma üres
+                    status = "LessonContentEmpty";
                     statusCode = 417;
                 }else{
                     boolean addSuccess = layer.addLesson(l);//Sikeres lecke hozzáadás
