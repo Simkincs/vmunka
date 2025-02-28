@@ -9,11 +9,16 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,19 +72,46 @@ public class Courses implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.vizsga_VizsgaProjekt_war_1.0-SNAPSHOTPU");
+    
     public Courses() {
     }
 
     public Courses(Integer id) {
-        this.id = id;
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Courses c = em.find(Courses.class, id);
+            
+            this.id = c.getId();
+            this.name = c.getName();
+            this.description = c.getDescription();
+            this.isDeleted = c.getIsDeleted();
+            this.createdAt = c.getCreatedAt();
+            this.deletedAt = c.getDeletedAt();
+            
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+        }finally{
+            em.clear();
+            em.close();
+        }
+        
     }
 
-    public Courses(Integer id, String name, String description, boolean isDeleted, Date createdAt) {
+    public Courses(Integer id, String name, String description, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+    }
+    
+    public Courses(String name, String description){
+        this.name = name;
+        this.description = description;
     }
 
     public Integer getId() {
@@ -154,5 +186,30 @@ public class Courses implements Serializable {
     public String toString() {
         return "com.vizsga.vizsgaprojekt.modell.Courses[ id=" + id + " ]";
     }
+    
+    public Boolean addCourses(Courses c) {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("addCourses");
+            
+            spq.registerStoredProcedureParameter("nameIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("descriptionIN", String.class, ParameterMode.IN);
+            
+            spq.setParameter("nameIN", c.getName());
+            spq.setParameter("descriptionIN", c.getDescription());
+            
+            spq.execute();
+            
+            return true;
+        } catch (Exception e) {
+            System.err.println("Hiba"+e.getLocalizedMessage());
+            return false;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
     
 }

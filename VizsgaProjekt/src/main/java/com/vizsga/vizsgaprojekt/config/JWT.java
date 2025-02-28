@@ -6,6 +6,7 @@ package com.vizsga.vizsgaprojekt.config;
 
 
 import com.vizsga.vizsgaprojekt.exceptionLogger.ExceptionLogger;
+import com.vizsga.vizsgaprojekt.modell.Tokens;
 import com.vizsga.vizsgaprojekt.modell.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,7 +16,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.impl.TextCodec;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
 import java.time.Instant;
@@ -44,10 +45,10 @@ public class JWT {
                 .setExpiration(Date.from(now.plus(1, ChronoUnit.DAYS)))
                 .signWith(
                         SignatureAlgorithm.HS256,
-                        TextCodec.BASE64.decode(SIGN)
+                        Decoders.BASE64.decode(SIGN)
                 )
                 .compact();
-          
+        
         return token;
     }
     
@@ -56,6 +57,7 @@ public class JWT {
             Jws<Claims> result;
             result = Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(SECRET)).parseClaimsJws(jwt);
             int id = result.getBody().get("id", Integer.class);
+            Tokens t = new Tokens(); //Tokenek fillterelése ami megegyezik a user id-val a token stringel
             Users u = new Users(id);
         
             if(u.getId() == id){
@@ -80,4 +82,14 @@ public class JWT {
         
         return isAdmin;
     }
+    
+    public static Integer getUserIdByToken(String jwt){
+        Jws<Claims> result;
+        result = Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(SECRET)).parseClaimsJws(jwt);
+        
+        Integer userId = result.getBody().get("id", Integer.class);
+        
+        return userId;
+    }
+    
 }

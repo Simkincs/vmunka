@@ -9,11 +9,16 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,8 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Tests.findAll", query = "SELECT t FROM Tests t"),
     @NamedQuery(name = "Tests.findById", query = "SELECT t FROM Tests t WHERE t.id = :id"),
     @NamedQuery(name = "Tests.findByLessonsId", query = "SELECT t FROM Tests t WHERE t.lessonsId = :lessonsId"),
-    @NamedQuery(name = "Tests.findByCoursesId", query = "SELECT t FROM Tests t WHERE t.coursesId = :coursesId"),
     @NamedQuery(name = "Tests.findByTitle", query = "SELECT t FROM Tests t WHERE t.title = :title"),
+    @NamedQuery(name = "Tests.findByQuestin", query = "SELECT t FROM Tests t WHERE t.questin = :questin"),
     @NamedQuery(name = "Tests.findByIsDeleted", query = "SELECT t FROM Tests t WHERE t.isDeleted = :isDeleted"),
     @NamedQuery(name = "Tests.findByCreatedAt", query = "SELECT t FROM Tests t WHERE t.createdAt = :createdAt"),
     @NamedQuery(name = "Tests.findByDeletedAt", query = "SELECT t FROM Tests t WHERE t.deletedAt = :deletedAt")})
@@ -51,13 +56,14 @@ public class Tests implements Serializable {
     private int lessonsId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "courses_id")
-    private int coursesId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "title")
     private String title;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "questin")
+    private String questin;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_deleted")
@@ -70,21 +76,48 @@ public class Tests implements Serializable {
     @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
+    
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.vizsga_VizsgaProjekt_war_1.0-SNAPSHOTPU");
 
     public Tests() {
     }
 
     public Tests(Integer id) {
-        this.id = id;
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Tests t = em.find(Tests.class, id);
+            
+            this.id = t.getId();
+            this.lessonsId = t.getLessonsId();
+            this.title = t.getTitle();
+            this.questin = t.getQuestin();
+            this.isDeleted = t.getIsDeleted();
+            this.createdAt = t.getCreatedAt();
+            this.deletedAt = t.getDeletedAt();
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+        }finally{
+            em.clear();
+            em.close();
+        }
     }
 
-    public Tests(Integer id, int lessonsId, int coursesId, String title, boolean isDeleted, Date createdAt) {
+    public Tests(Integer id, int lessonsId, String title, String questin, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.lessonsId = lessonsId;
-        this.coursesId = coursesId;
         this.title = title;
+        this.questin = questin;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+    }
+    
+    public Tests(Integer lessonsId, String title, String questin){
+        this.lessonsId = lessonsId;
+        this.title = title;
+        this.questin = questin;
     }
 
     public Integer getId() {
@@ -103,20 +136,20 @@ public class Tests implements Serializable {
         this.lessonsId = lessonsId;
     }
 
-    public int getCoursesId() {
-        return coursesId;
-    }
-
-    public void setCoursesId(int coursesId) {
-        this.coursesId = coursesId;
-    }
-
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getQuestin() {
+        return questin;
+    }
+
+    public void setQuestin(String questin) {
+        this.questin = questin;
     }
 
     public boolean getIsDeleted() {
@@ -166,6 +199,34 @@ public class Tests implements Serializable {
     @Override
     public String toString() {
         return "com.vizsga.vizsgaprojekt.modell.Tests[ id=" + id + " ]";
+    }
+    
+    public Boolean addTest(Tests t){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("addTest");
+            
+            spq.registerStoredProcedureParameter("lessonIdIN", Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("titleIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("questionIN", String.class, ParameterMode.IN);
+            
+            spq.setParameter("lessonIdIN", t.getLessonsId());
+            spq.setParameter("titleIN", t.getTitle());
+            spq.setParameter("questionIN", t.getQuestin());
+            
+            spq.execute();
+            
+            return true;
+        } catch (Exception e) {
+            System.err.println("Hiba"+e.getLocalizedMessage());
+            return false;
+        }finally{
+            em.clear();
+            em.close();
+        }
+        
     }
     
 }

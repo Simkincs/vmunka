@@ -5,9 +5,17 @@
 package com.vizsga.vizsgaprojekt.modell;
 
 import java.io.Serializable;
+import javax.mail.PasswordAuthentication;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +50,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
     @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
-    @NamedQuery(name = "Users.findByCoursesId", query = "SELECT u FROM Users u WHERE u.coursesId = :coursesId"),
     @NamedQuery(name = "Users.findByIsAdmin", query = "SELECT u FROM Users u WHERE u.isAdmin = :isAdmin"),
     @NamedQuery(name = "Users.findByIsDeleted", query = "SELECT u FROM Users u WHERE u.isDeleted = :isDeleted"),
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt"),
@@ -50,6 +57,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static Users getUserById() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -76,10 +87,6 @@ public class Users implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "courses_id")
-    private int coursesId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_admin")
@@ -113,7 +120,6 @@ public class Users implements Serializable {
             this.firstName = u.getFirstName();
             this.lastName = u.getLastName();
             this.password = u.getPassword();
-            this.coursesId = u.getCoursesId();
             this.isAdmin = u.getIsAdmin();
             this.isDeleted = u.getIsDeleted();
             this.createdAt = u.getCreatedAt();
@@ -127,13 +133,12 @@ public class Users implements Serializable {
         }
     }
 
-    public Users(Integer id, String email, String firstName, String lastName, String password, int coursesId, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
+    public Users(Integer id, String email, String firstName, String lastName, String password, boolean isAdmin, boolean isDeleted, Date createdAt, Date deletedAt) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.coursesId = coursesId;
         this.isAdmin = isAdmin;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
@@ -187,14 +192,6 @@ public class Users implements Serializable {
         this.password = password;
     }
 
-    public int getCoursesId() {
-        return coursesId;
-    }
-
-    public void setCoursesId(int coursesId) {
-        this.coursesId = coursesId;
-    }
-
     public boolean getIsAdmin() {
         return isAdmin;
     }
@@ -226,6 +223,7 @@ public class Users implements Serializable {
     public void setDeletedAt(Date deletedAt) {
         this.deletedAt = deletedAt;
     }
+    
 
     @Override
     public int hashCode() {
@@ -277,11 +275,10 @@ public class Users implements Serializable {
                         o[2].toString(),
                         o[3].toString(),
                         o[4].toString(),
-                        Integer.parseInt(o[5].toString()),
+                        Boolean.parseBoolean(o[5].toString()),
                         Boolean.parseBoolean(o[6].toString()),
-                        Boolean.parseBoolean(o[7].toString()),
-                        formatter.parse(o[8].toString()),
-                        o[9] == null ? null : formatter.parse(o[9].toString())
+                        formatter.parse(o[7].toString()),
+                        o[8] == null ? null : formatter.parse(o[8].toString())
                 );
                 return u;
             }
@@ -296,29 +293,72 @@ public class Users implements Serializable {
         }
     }
     
-    public static Boolean isUsersExists(String email){
+    public static Boolean isUserExists(String email){
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("isUserExists");
+
+            spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("resultOUT", Boolean.class, ParameterMode.OUT);
+
+            spq.setParameter("emailIN", email);
+
+            spq.execute();
+
+            Boolean result = Boolean.valueOf(spq.getOutputParameterValue("resultOUT").toString());
+            return result;
+
+        }catch(Exception e){
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public static Users getUserById(Integer id){
         EntityManager em = emf.createEntityManager();
         
         try {
-            StoredProcedureQuery spq = em.createStoredProcedureQuery("isUsersExists");
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("getUserById");
             
-            spq.registerStoredProcedureParameter("emailIN", String.class , ParameterMode.IN);
-            spq.registerStoredProcedureParameter("resultOUT", String.class , ParameterMode.OUT);
+            spq.registerStoredProcedureParameter("userIdIN", Integer.class, ParameterMode.IN);
+            spq.setParameter("userIdIN", id);
             
-            spq.setParameter("emailIN", email);
+            List<Object[]> resultList = spq.getResultList();
             
-            spq.execute();
+            if(resultList.isEmpty()){
+                return null; //Nincs ilyen id felhasználó
+            }
             
-            Boolean result = Boolean.valueOf(spq.getOutputParameterValue("resultOUT").toString());
+            Users toReturn = new Users();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(Object[] o : resultList){
+                Users u = new Users(
+                        Integer.valueOf(o[0].toString()),
+                        o[1].toString(),
+                        o[2].toString(),
+                        o[3].toString(),
+                        o[4].toString(),
+                        Boolean.parseBoolean(o[5].toString()),
+                        Boolean.parseBoolean(o[6].toString()),
+                        formatter.parse(o[7].toString()),
+                        o[8] == null ? null : formatter.parse(o[8].toString())
+                );
+                return u;
+            }
+            return  toReturn;
             
-            return result;
-        } catch (Exception e) {
+        }  catch (Exception e) {
             System.err.println("Hiba: "+ e.getLocalizedMessage());
             return null;
         }finally{
             em.clear();
             em.close();
         }
+        
     }
     
     public Boolean registerAdmin(Users u){
@@ -346,6 +386,147 @@ public class Users implements Serializable {
         }finally{
             em.clear();
             em.close();
+        }
+    }
+    
+    
+    public Boolean registerUser(Users u){
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("registerUser");
+
+            spq.registerStoredProcedureParameter("emailIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("firstNameIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("lastNameIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("passwordIN", String.class, ParameterMode.IN);
+
+            spq.setParameter("emailIN", u.getEmail());
+            spq.setParameter("firstNameIN", u.getFirstName());
+            spq.setParameter("lastNameIN", u.getLastName());
+            spq.setParameter("passwordIN", u.getPassword());
+
+            spq.execute();
+
+            return true;
+
+        }catch(Exception e){
+            System.err.println("Hiba: " + e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public List<Users> getAllUser(){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("getAllUser");
+            
+            spq.execute();
+            
+            List<Users> toReturn = new ArrayList();
+            List<Object[]> resultList = spq.getResultList();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            
+            for(Object[] record : resultList){
+                 Users u = new Users(
+                        Integer.valueOf(record[0].toString()),
+                        record[1].toString(),
+                        record[2].toString(),
+                        record[3].toString(),
+                        record[4].toString(),
+                        Boolean.parseBoolean(record[5].toString()),
+                        Boolean.parseBoolean(record[6].toString()),
+                        formatter.parse(record[7].toString()),
+                        record[8] == null ? null : formatter.parse(record[8].toString())
+                );
+                toReturn.add(u);
+            }
+            return  toReturn;
+            
+        } catch (Exception e) {
+            System.err.println("Hiba: "+ e.getLocalizedMessage());
+            return null;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public Boolean changePassword(Integer userId, String newPassword, Integer creator){
+        EntityManager em = emf.createEntityManager();
+        
+        try{
+            StoredProcedureQuery spq = em.createStoredProcedureQuery("changePassword");
+            
+            spq.registerStoredProcedureParameter("userIdIN ", Integer.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("newPasswordIN", String.class, ParameterMode.IN);
+            spq.registerStoredProcedureParameter("creatorIN", Integer.class, ParameterMode.IN);
+            
+            spq.setParameter("userIdIN", userId);
+            spq.setParameter("newPasswordIN", newPassword);
+            spq.setParameter("creatorIN", creator);
+        
+            spq.execute();
+            
+            return true;
+        }catch(Exception e){
+            System.err.println("Hiba"+e.getLocalizedMessage());
+            return false;
+        }finally{
+            em.clear();
+            em.close();
+        }
+    }
+    
+    public static Boolean sendEmail(String to, boolean ccMe){
+        try {
+            //Emailt küldő email címe és alkalmazás jelszó
+            final String from = "simonkincso2002@gmail.com";
+            //Google alkalmazás jelszó netneans
+            final String passwordApp = "bpip gaqn mfoq tako";
+            
+            //Tulajdonságok beállítása
+            String host = "smtp.gmail.com";
+
+            Properties properties = System.getProperties();
+
+            properties.put("mail.smtp.host", host);
+            properties.put("mail.smtp.port", "465");
+            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.auth", "true");
+            
+            //Application password beállítása az email címhez és session config
+            Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(from, passwordApp);
+                }
+            });
+            session.setDebug(true);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            
+            //Több címzet
+            if(ccMe){
+                message.addRecipient(Message.RecipientType.CC, new InternetAddress(from));
+            }
+            
+            message.setSubject("Teszt email");
+            
+            String msg = "Email tartalma, lehet naggyon hosszu is, lehet html is.";
+            message.setContent(msg, "text/html;charset=utf-8");
+            
+            Transport.send(message);
+            
+            return true;
+        } catch (Exception e) {
+            System.err.println("Hiba:" + e.getLocalizedMessage());
+            return false;
         }
     }
     
