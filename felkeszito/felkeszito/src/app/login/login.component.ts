@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule], // FormsModule IMPORTÁLÁSA!
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   email: string = '';
@@ -28,5 +28,9 @@ export class LoginComponent {
 
   navigateToRegister() {
     this.router.navigate(['/register']);
+  }
+
+  navigateToForgotPassword() {
+    this.router.navigate(['/forgot-password'])
   }
 }

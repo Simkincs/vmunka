@@ -4,7 +4,17 @@
             <form class="register" (submit)="validatePassword($event)">
                 <div class="register__field">
                     <i class="register__icon fas fa-envelope"></i>
-                    <input type="email" class="register__input"name="email" placeholder="Email" required>
+                    <input type="email" class="register__input" name="email" placeholder="Email" required>
+                </div>
+                <div class="name-fields">
+                    <div class="register__field">
+                        <i class="register__icon fas fa-user"></i>
+                        <input type="text" class="register__input" name="lastname" placeholder="Last Name" required>
+                    </div>
+                    <div class="register__field">
+                        <i class="register__icon fas fa-user"></i>
+                        <input type="text" class="register__input" name="firstname" placeholder="First Name" required>
+                    </div>
                 </div>
                 <div class="register__field">
                     <i class="register__icon fas fa-lock"></i>
@@ -17,10 +27,10 @@
                 <button type="submit" class="button register__submit">
                     <span class="button__text">Sign Up</span>
                     <i class="button__icon fas fa-chevron-right"></i>
-                </button>       
+                </button>
             </form>
             <div class="social-login">
-                <button class="login-button" (click)="navigateToLogin()">Login</button>
+                <p>I have an <span class="account-link" (click)="navigateToLogin()">Account</span></p>
             </div>
         </div>
         <div class="screen__background">
@@ -28,6 +38,6 @@
             <span class="screen__background__shape screen__background__shape3"></span>    
             <span class="screen__background__shape screen__background__shape2"></span>
             <span class="screen__background__shape screen__background__shape1"></span>
-          </div> 
+        </div> 
     </div>
 </div>

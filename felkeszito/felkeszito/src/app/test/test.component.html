@@ -1,0 +1,23 @@
+<header class="header">
+  <nav class="navbar">
+    <div class="logo">Érettségi Felkészítő</div>
+    <div class="search-container">
+        <input type="text" placeholder="Keresés..." class="search-input" />
+    </div>
+    <div class="user">Felhasználó</div>
+</nav>
+  </header>
+  <div class="quiz-container">
+    <div class="question">Az alábbiak közül mi minősül biztosítatlan vasúti átjárónak?</div>
+    <ul class="answers">
+        <li><label><input type="radio" name="answer" value="1"> Az olyan vasúti átjáró, amit még jelzőtábla sem jelez.</label></li>
+        <li><label><input type="radio" name="answer" value="2"> Az olyan vasúti átjáró, amit nem biztosít teljes sorompó.</label></li>
+        <li><label><input type="radio" name="answer" value="3"> Az olyan vasúti átjáró, amelyben a vasúti jármű közlekedésére szolgáló sínpár nem süllyesztett kivitelű.</label></li>
+        <li><label><input type="radio" name="answer" value="4"> Az olyan vasúti átjáró, ahol a forgalmat berendezések vagy jelzőőr nem szabályozza.</label></li>
+    </ul>
+    <button class="submit-btn" onclick="checkAnswer()">Következő feladat</button>
+    <div class="result" id="result"></div>
+</div>
+<footer class="footer">
+    <p>© 2025 Felkészítő</p>
+  </footer>

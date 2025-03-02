@@ -89,6 +89,9 @@
       padding: 30px;
       padding-top: 156px;
     }
+    .register__form {
+      padding-bottom: 20px;
+  }
 
     .register__field {
       padding: 20px 0px;  
@@ -111,6 +114,22 @@
       width: 75%;
       transition: .2s;
     }
+
+    .social-login {
+      text-align: right;
+      margin-right: 10px;
+  }
+  
+  .account-link {
+      color: #4C489D;
+      text-decoration: underline;
+      font-weight: bold;
+      cursor: pointer;
+  }
+  
+  .account-link:hover {
+      color: #6A679E;
+  }
 
     .register__input:active,
     .register__input:focus,
@@ -150,21 +169,30 @@
       color: #7875B5;
     }
 
-    .login-button {
-      background: #fff;
-      font-size: 14px;
-      padding: 16px 20px;
-      border-radius: 26px;
-      border: 1px solid #D4D3E8;
-      font-weight: 700;
-      width: 100%;
-      color: #4C489D;
-      cursor: pointer;
-      transition: .2s;
-      text-transform: uppercase;
+      .login-button {
+        margin-top: 10px;
+        font-size: 12px;
+        padding: 10px 15px;
+        width: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+    top: -10px;
     }
     .login-button:hover {
       background: #6A679E;
       color: #fff;
     }
+    .name-fields {
+      display: flex;
+      gap: 10px;
+  }
+  .name-fields .register__field {
+      flex: 1;
+  }
 
+  .register__submit {
+    margin-top: 20px;
+    padding: 12px 20px;
+}

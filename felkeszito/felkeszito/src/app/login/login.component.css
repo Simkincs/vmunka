@@ -50,6 +50,21 @@ body {
   transform: rotate(45deg);
   position: absolute;
 }
+.social-register {
+  text-align: right;
+  margin-right: 10px; 
+}
+
+.account-link {
+  color: #4C489D;
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.account-link:hover {
+  color: #6A679E;
+}
 
 .screen__background__shape1 {
   height: 520px;
@@ -197,3 +212,14 @@ body {
     background: #6A679E;
     color: #fff;
   }
+  .forgot-password {
+    color: #4C489D;
+    text-decoration: underline;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .forgot-password:hover {
+    color: #6A679E;
+  }
+  
